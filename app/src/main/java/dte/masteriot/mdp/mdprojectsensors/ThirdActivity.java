@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
+///new push
 public class ThirdActivity extends AppCompatActivity {
     public static final String LOGSLOADWEBCONTENT = "LOGSLOADWEBCONTENT"; // to easily filter logs
     private String logTag; // to clearly identify logs

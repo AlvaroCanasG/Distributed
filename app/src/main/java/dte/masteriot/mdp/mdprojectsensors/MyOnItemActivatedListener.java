@@ -38,10 +38,9 @@ public class MyOnItemActivatedListener implements OnItemActivatedListener {
 
         Intent i = new Intent(context, ThirdActivity.class);
         Item selecteditem = adapter.getItemAtPosition(itemdetails.getPosition());
-             i.putExtra("Light", selecteditem.getLight());
-             i.putExtra("Humidity", selecteditem.getHumidity());
-             i.putExtra("Temperature", selecteditem.getTemperature());
-             i.putExtra("Date", selecteditem.getDate());
+             i.putExtra("Inside", selecteditem.getInside());
+             i.putExtra("Arriving", selecteditem.getArriving());
+             i.putExtra("Error", selecteditem.getError());
              i.putExtra("Name", selecteditem.getTitle());
 
         context.startActivity(i);

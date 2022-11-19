@@ -4,26 +4,24 @@ public class Item {
     // This class contains the actual data of each item of the dataset
 
     private String title;
-    private String subtitle;
+
     private long key;
     private boolean status;
 
     private int image;
-    private String Light;
-    private String Humidity;
-    private String Temperature;
-    private String Date;
+    private Integer Inside;
+    private Integer Arriving;
+
+    private String Error;
 
     //Item(String title, String stringURI, String subtitle, Long key, int image, boolean status) {
-        Item(String title, String Light, String Humidity, String Temperature,String Date, String subtitle, long key, int image , boolean status) {
+        Item(String title, Integer Arriving,Integer Inside, String Error, long key, int image , boolean status) {
         this.title = title;
-        this.subtitle = subtitle;
         this.key = key;
         this.image = image;
-        this.Light = Light;
-        this.Humidity = Humidity;
-        this.Temperature = Temperature;
-        this.Date = Date;
+        this.Inside = Inside;
+        this.Arriving = Arriving;
+        this.Error = Error;
         this.status = status;
     }
 
@@ -31,9 +29,6 @@ public class Item {
         return title;
     }
 
-    public String getSubtitle() {
-        return subtitle;
-    }
 
     public long getKey() {
         return key;
@@ -41,17 +36,18 @@ public class Item {
 
     public int getImage(){ return image;}
 
-    public String getLight(){return Light; }
-    public String getHumidity(){ return Humidity;}
-    public String getTemperature(){ return Temperature;}
-    public String getDate(){ return Date;}
+    public Integer getInside(){return Inside; }
+    public Integer getArriving(){ return Arriving;}
+    public String getError(){ return Error;}
+    public void setArriving (String arriving){
+            Arriving = Integer.parseInt(arriving);
+    }
 
 
-    public void setParameters(String light, String humidity, String temperature, String date){
-            Light = light;
-            Temperature = temperature;
-            Humidity = humidity;
-            Date = date;
+    public void setParameters(Integer arriving, Integer inside, String error){
+            Inside = inside;
+            Arriving = arriving;
+            Error = error;
     }
 
     public boolean getStatus(){return status; }

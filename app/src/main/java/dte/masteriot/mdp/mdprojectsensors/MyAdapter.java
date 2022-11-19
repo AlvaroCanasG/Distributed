@@ -81,7 +81,7 @@ public class MyAdapter extends RecyclerView.Adapter<dte.masteriot.mdp.mdprojects
     public int getPositionOfKey(Long searchedkey) {
         // Look for the position of the Item with key = searchedkey.
         // The following works because in Item, the method "equals" is overriden to compare only keys:
-        int position = items.indexOf(new Item("placeholder", "placeholder","placeholder","placeholder", "placeholder,","placeholder", searchedkey, 0, true));
+        int position = items.indexOf(new Item("placeholder",0,0, "placeholder", searchedkey, 0,true));
         Log.d(TAG, "getPositionOfKey() called for key " + searchedkey + ", will return " + position);
         return position;
     }

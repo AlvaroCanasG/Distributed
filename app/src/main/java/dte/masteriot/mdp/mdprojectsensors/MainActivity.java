@@ -52,7 +52,6 @@ public class MainActivity extends AppCompatActivity {
     MyApplication myApplication = (MyApplication) this.getApplication();
     // App-specific dataset:
     List<Item> listofitems =  myApplication.getListofitems();
-    private static boolean listofitemsinitialized = false;
 
     private RecyclerView recyclerView;
     private MyAdapter recyclerViewAdapter;
@@ -60,19 +59,20 @@ public class MainActivity extends AppCompatActivity {
     private MyOnItemActivatedListener onItemActivatedListener;
     private Object next;
 
-    String  TomatoLight,TomatoTemperature, TomatoHumidity, TomatoDate ;
-    String EggplantLight, EggplantTemperature, EggplantHumidity, EggplantDate;
-    String PepperLight, PepperTemperature, PepperHumidity, PepperDate;
-    String GreenBeanLight, GreenBeanTemperature, GreenBeanHumidity, GreenBeanDate;
-    String ZucchiniLight, ZucchiniTemperature, ZucchiniHumidity, ZucchiniDate;
-    String CucumberLight, CucumberTemperature, CucumberHumidity, CucumberDate;
-    String MelonLight, MelonTemperature, MelonHumidity, MelonDate;
-    String WatermelonLight, WatermelonTemperature, WatermelonHumidity, WatermelonDate;
+    String OneArrivingS, OneLeaving, OneError, OneArrived;
+    String TwoArrivingS, TwoLeaving, TwoError, TwoArrived;
+    String ThreeArrivingS, ThreeLeaving, ThreeError, ThreeArrived;
+    String FourArrivingS, FourLeaving, FourError, FourArrived;
+    Integer OneInside, OneArriving;
+    Integer TwoInside, TwoArriving;
+    Integer ThreeInside, ThreeArriving;
+    Integer FourInside, FourArriving;
+
 
 
     ExecutorService es;//[MGM] Background
    // Handler handler;
-    MQTTClient Greenhouse;
+    MQTTClient Warehouse;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,19 +112,19 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // Creation of the MQTT Client and subscription to the topics
-        Greenhouse = new MQTTClient(this);
+        Warehouse = new MQTTClient(this);
         Random random = new Random();
-        Greenhouse.clientId = Greenhouse.clientId + random.nextInt(100000);
-        Greenhouse.mqttAndroidClient = new MqttAndroidClient(getApplicationContext(), Greenhouse.serverUri, Greenhouse.clientId);
+        Warehouse.clientId = Warehouse.clientId + random.nextInt(100000);
+        Warehouse.mqttAndroidClient = new MqttAndroidClient(getApplicationContext(), Warehouse.serverUri, Warehouse.clientId);
         MqttConnectOptions mqttConnectOptions = new MqttConnectOptions();
         mqttConnectOptions.setAutomaticReconnect(true);
         mqttConnectOptions.setCleanSession(false);
 
         //Last Will message
-        mqttConnectOptions.setWill(Greenhouse.publishTopic,Greenhouse.LWillmessage.getBytes(),0,false);
+        mqttConnectOptions.setWill(Warehouse.publishTopic, Warehouse.LWillmessage.getBytes(),0,false);
 
         try {
-            Greenhouse.mqttAndroidClient.connect(mqttConnectOptions, null, new IMqttActionListener() {
+            Warehouse.mqttAndroidClient.connect(mqttConnectOptions, null, new IMqttActionListener() {
                 @Override
                 public void onSuccess(IMqttToken asyncActionToken) {
                     DisconnectedBufferOptions disconnectedBufferOptions = new DisconnectedBufferOptions();
@@ -132,23 +132,15 @@ public class MainActivity extends AppCompatActivity {
                     disconnectedBufferOptions.setBufferSize(100);
                     disconnectedBufferOptions.setPersistBuffer(false);
                     disconnectedBufferOptions.setDeleteOldestMessages(false);
-                    Greenhouse.mqttAndroidClient.setBufferOpts(disconnectedBufferOptions);
-                    Greenhouse.subscriptionTopic = "Tomato/#";
-                    Greenhouse.subscribeToTopic();
-                    Greenhouse.subscriptionTopic = "Pepper/#";
-                    Greenhouse.subscribeToTopic();
-                    Greenhouse.subscriptionTopic = "Eggplant/#";
-                    Greenhouse.subscribeToTopic();
-                    Greenhouse.subscriptionTopic = "GreenBean/#";
-                    Greenhouse.subscribeToTopic();
-                    Greenhouse.subscriptionTopic = "Cucumber/#";
-                    Greenhouse.subscribeToTopic();
-                    Greenhouse.subscriptionTopic = "Zucchini/#";
-                    Greenhouse.subscribeToTopic();
-                    Greenhouse.subscriptionTopic = "Melon/#";
-                    Greenhouse.subscribeToTopic();
-                    Greenhouse.subscriptionTopic = "Watermelon/#";
-                    Greenhouse.subscribeToTopic();
+                    Warehouse.mqttAndroidClient.setBufferOpts(disconnectedBufferOptions);
+                    Warehouse.subscriptionTopic = "Warehouse_1/#";
+                    Warehouse.subscribeToTopic();
+                    Warehouse.subscriptionTopic = "Warehouse_2/#";
+                    Warehouse.subscribeToTopic();
+                    Warehouse.subscriptionTopic = "Warehouse_3/#";
+                    Warehouse.subscribeToTopic();
+                    Warehouse.subscriptionTopic = "Warehouse_4/#";
+                    Warehouse.subscribeToTopic();
                     Snackbar.make(findViewById(R.id.bNewMeasurement), "Client connected and subscribed", 2000).show();
                 }
 
@@ -164,163 +156,126 @@ public class MainActivity extends AppCompatActivity {
 
 
         es = Executors.newSingleThreadExecutor();
-        MQTTSub task = new MQTTSub(handler, Greenhouse);
+        MQTTSub task = new MQTTSub(handler, Warehouse);
         es.execute(task);
 
 
     }
 
     Handler handler = new Handler(Looper.getMainLooper()) { //Handler for the message received from the background. Depending on the key (topic), the message will be assigned to a specif String variable
-        @Override                                   //Then, the attributes (Temperature, Humidity and Light) of each item are updated.
+        @Override                                   //Then, the attributes (Inside, Leaving and Arriving) of each item are upErrord.
         public void handleMessage(Message inputMessage) {
             this.obtainMessage();
-            TomatoLight = inputMessage.getData().getString("Tomato/Light");
-            TomatoTemperature = inputMessage.getData().getString("Tomato/Temperature");
-            TomatoHumidity = inputMessage.getData().getString("Tomato/Humidity");
-            TomatoDate = inputMessage.getData().getString("Tomato/Date");
-            recyclerViewAdapter.getItemWithKey(0).setParameters(TomatoLight,TomatoHumidity, TomatoTemperature, TomatoDate);
-            if(TomatoTemperature != null) {
-                if (Float.parseFloat(TomatoTemperature) > (float)30.0) {
-                    recyclerViewAdapter.getItemWithKey(0).setStatus(false);
-                    recyclerViewAdapter.notifyDataSetChanged();
-                } else if (Float.parseFloat((TomatoTemperature)) < (float)10.0) {
-                    recyclerViewAdapter.getItemWithKey(0).setStatus(false);
-                    recyclerViewAdapter.notifyDataSetChanged();
-                } else {
-                    recyclerViewAdapter.getItemWithKey(0).setStatus(true);
-                    recyclerViewAdapter.notifyDataSetChanged();
-                }
+//WAREHOUSE 1
+            OneArrivingS = inputMessage.getData().getString("Warehouse_1/Arriving");
+            if(OneArrivingS != null){
+                int Add = Integer.parseInt(OneArrivingS);
+                OneArriving = recyclerViewAdapter.getItemWithKey(0).getArriving() + Add;// Add to Arriving
+            }
+            OneLeaving = inputMessage.getData().getString("Warehouse_1/Leaving");
+            if(OneLeaving != null){
+                int Subtract = Integer.parseInt(OneLeaving);
+                OneInside = recyclerViewAdapter.getItemWithKey(0).getInside() - Subtract;
+
+            }
+            OneError = inputMessage.getData().getString("Warehouse_1/Error");
+            OneArrived = inputMessage.getData().getString("Warehouse_1/Arrived");
+
+            if(OneArrived != null){ //When a box Arrives, we need to update Arriving and Inside fields
+                int Total = recyclerViewAdapter.getItemWithKey(0).getInside();
+                int Add = Integer.parseInt(OneArrived);
+                Total = Add + Total;
+                OneInside = Total;
+                int TotalArr = recyclerViewAdapter.getItemWithKey(0).getArriving();
+                OneArriving =  TotalArr - Add;
             }
 
-                PepperLight = inputMessage.getData().getString("Pepper/Light");
-                PepperTemperature = inputMessage.getData().getString("Pepper/Temperature");
-                PepperHumidity = inputMessage.getData().getString("Pepper/Humidity");
-                PepperDate = inputMessage.getData().getString("Pepper/Date");
-                recyclerViewAdapter.getItemWithKey(1).setParameters(PepperLight,PepperHumidity, PepperTemperature, PepperDate);
-                if(PepperTemperature!= null) {
-                    if (Float.parseFloat(PepperTemperature) > 30.0) {
-                        recyclerViewAdapter.getItemWithKey(1).setStatus(false);
-                        recyclerViewAdapter.notifyDataSetChanged();
-                    } else if (Float.parseFloat((PepperTemperature)) < (float)10.0) {
-                        recyclerViewAdapter.getItemWithKey(1).setStatus(false);
-                        recyclerViewAdapter.notifyDataSetChanged();
-                    } else {
-                        recyclerViewAdapter.getItemWithKey(1).setStatus(true);
-                        recyclerViewAdapter.notifyDataSetChanged();
-                    }
-                }
+            recyclerViewAdapter.getItemWithKey(0).setParameters(OneArriving, OneInside, OneError); //UPDATE
 
-                EggplantLight = inputMessage.getData().getString("Eggplant/Light");
-                EggplantTemperature = inputMessage.getData().getString("Eggplant/Temperature");
-                EggplantHumidity = inputMessage.getData().getString("Eggplant/Humidity");
-                EggplantDate = inputMessage.getData().getString("Eggplant/Date");
-                recyclerViewAdapter.getItemWithKey(2).setParameters(EggplantLight,EggplantHumidity, EggplantTemperature, EggplantDate);
-                if(EggplantTemperature != null) {
-                    if (Float.parseFloat(EggplantTemperature) > 30.0) {
-                        recyclerViewAdapter.getItemWithKey(2).setStatus(false);
-                        recyclerViewAdapter.notifyDataSetChanged();
-                    } else if (Float.parseFloat((EggplantTemperature)) < (float)10.0) {
-                        recyclerViewAdapter.getItemWithKey(2).setStatus(false);
-                        recyclerViewAdapter.notifyDataSetChanged();
-                    } else {
-                        recyclerViewAdapter.getItemWithKey(2).setStatus(true);
-                        recyclerViewAdapter.notifyDataSetChanged();
-                    }
-                }
+//WAREHOUSE 2
+            TwoArrivingS = inputMessage.getData().getString("Warehouse_2/Arriving");
+            if(TwoArrivingS != null){
+                int Add = Integer.parseInt(TwoArrivingS);
+                TwoArriving = recyclerViewAdapter.getItemWithKey(1).getArriving() + Add;// Add to Arriving
+            }
+            TwoLeaving = inputMessage.getData().getString("Warehouse_2/Leaving");
+            if(TwoLeaving != null){
+                int Subtract = Integer.parseInt(TwoLeaving);
+                TwoInside = recyclerViewAdapter.getItemWithKey(1).getInside() - Subtract;
+
+            }
+            TwoError = inputMessage.getData().getString("Warehouse_2/Error");
+            TwoArrived = inputMessage.getData().getString("Warehouse_2/Arrived");
+
+            if(TwoArrived != null){ //When a box Arrives, we need to update Arriving and Inside fields
+                int Total = recyclerViewAdapter.getItemWithKey(1).getInside();
+                int Add = Integer.parseInt(TwoArrived);
+                Total = Add + Total;
+                TwoInside = Total;
+                int TotalArr = recyclerViewAdapter.getItemWithKey(1).getArriving();
+                TwoArriving =  TotalArr - Add;
+            }
+
+            recyclerViewAdapter.getItemWithKey(1).setParameters(TwoArriving, TwoInside, TwoError); //UPDATE
 
 
-                GreenBeanLight = inputMessage.getData().getString("GreenBean/Light");
-                GreenBeanTemperature = inputMessage.getData().getString("GreenBean/Temperature");
-                GreenBeanHumidity = inputMessage.getData().getString("GreenBean/Humidity");
-                GreenBeanDate = inputMessage.getData().getString("GreenBean/Date");
-                recyclerViewAdapter.getItemWithKey(3).setParameters(GreenBeanLight,GreenBeanHumidity, GreenBeanTemperature, GreenBeanDate);
-                if(GreenBeanTemperature != null) {
-                    if (Float.parseFloat(GreenBeanTemperature) > (float)30.0) {
-                        recyclerViewAdapter.getItemWithKey(3).setStatus(false);
-                        recyclerViewAdapter.notifyDataSetChanged();
-                    } else if (Float.parseFloat((GreenBeanTemperature)) < (float)10.0) {
-                        recyclerViewAdapter.getItemWithKey(3).setStatus(false);
-                        recyclerViewAdapter.notifyDataSetChanged();
-                    } else {
-                        recyclerViewAdapter.getItemWithKey(3).setStatus(true);
-                        recyclerViewAdapter.notifyDataSetChanged();
-                    }
-                }
 
-                ZucchiniLight = inputMessage.getData().getString("Zucchini/Light");
-                ZucchiniTemperature = inputMessage.getData().getString("Zucchini/Temperature");
-                ZucchiniHumidity = inputMessage.getData().getString("Zucchini/Humidity");
-                ZucchiniDate = inputMessage.getData().getString("Zucchini/Date");
-                recyclerViewAdapter.getItemWithKey(4).setParameters(ZucchiniLight,ZucchiniHumidity, ZucchiniTemperature, ZucchiniDate);
-                if(ZucchiniTemperature != null) {
-                    if (Float.parseFloat(ZucchiniTemperature) > (float)30.0) {
-                        recyclerViewAdapter.getItemWithKey(4).setStatus(false);
-                        recyclerViewAdapter.notifyDataSetChanged();
-                    } else if (Float.parseFloat((ZucchiniTemperature)) < (float)10.0) {
-                        recyclerViewAdapter.getItemWithKey(4).setStatus(false);
-                        recyclerViewAdapter.notifyDataSetChanged();
-                    } else {
-                        recyclerViewAdapter.getItemWithKey(4).setStatus(true);
-                        recyclerViewAdapter.notifyDataSetChanged();
-                    }
-                }
+// WAREHOUSE 3
+            ThreeArrivingS = inputMessage.getData().getString("Warehouse_3/Arriving");
+            if(ThreeArrivingS != null){
+                int Add = Integer.parseInt(ThreeArrivingS);
+                ThreeArriving = recyclerViewAdapter.getItemWithKey(2).getArriving() + Add;// Add to Arriving
+            }
+            ThreeLeaving = inputMessage.getData().getString("Warehouse_3/Leaving");
+            if(ThreeLeaving != null){
+                int Subtract = Integer.parseInt(ThreeLeaving);
+                ThreeInside = recyclerViewAdapter.getItemWithKey(2).getInside() - Subtract;
 
+            }
+            ThreeError = inputMessage.getData().getString("Warehouse_3/Error");
+            ThreeArrived = inputMessage.getData().getString("Warehouse_3/Arrived");
 
-                CucumberLight = inputMessage.getData().getString("Cucumber/Light");
-                CucumberTemperature = inputMessage.getData().getString("Cucumber/Temperature");
-                CucumberHumidity = inputMessage.getData().getString("Cucumber/Humidity");
-                CucumberDate = inputMessage.getData().getString("Cucumber/Date");
-                recyclerViewAdapter.getItemWithKey(5).setParameters(CucumberLight,CucumberHumidity, CucumberTemperature, CucumberDate);
-                if(CucumberTemperature != null) {
-                    if (Float.parseFloat(CucumberTemperature) > (float)30.0) {
-                        recyclerViewAdapter.getItemWithKey(5).setStatus(false);
-                        recyclerViewAdapter.notifyDataSetChanged();
-                    } else if (Float.parseFloat((CucumberTemperature)) < (float)10.0) {
-                        recyclerViewAdapter.getItemWithKey(5).setStatus(false);
-                        recyclerViewAdapter.notifyDataSetChanged();
-                    } else {
-                        recyclerViewAdapter.getItemWithKey(5).setStatus(true);
-                        recyclerViewAdapter.notifyDataSetChanged();
-                    }
-                }
+            if(ThreeArrived != null){ //When a box Arrives, we need to update Arriving and Inside fields
+                int Total = recyclerViewAdapter.getItemWithKey(2).getInside();
+                int Add = Integer.parseInt(ThreeArrived);
+                Total = Add + Total;
+                ThreeInside = Total;
+                int TotalArr = recyclerViewAdapter.getItemWithKey(2).getArriving();
+                ThreeArriving =  TotalArr - Add;
+            }
 
+            recyclerViewAdapter.getItemWithKey(2).setParameters(ThreeArriving, ThreeInside, ThreeError); //UPDATE
 
-                MelonLight = inputMessage.getData().getString("Melon/Light");
-                MelonTemperature = inputMessage.getData().getString("Melon/Temperature");
-                MelonHumidity = inputMessage.getData().getString("Melon/Humidity");
-                MelonDate = inputMessage.getData().getString("Melon/Date");
-                recyclerViewAdapter.getItemWithKey(6).setParameters(MelonLight,MelonHumidity, MelonTemperature, MelonDate);
-                if(MelonTemperature!= null) {
-                    if (Float.parseFloat(MelonTemperature) > (float)30.0) {
-                        recyclerViewAdapter.getItemWithKey(6).setStatus(false);
-                        recyclerViewAdapter.notifyDataSetChanged();
-                    } else if (Float.parseFloat((MelonTemperature)) < (float)10.0) {
-                        recyclerViewAdapter.getItemWithKey(6).setStatus(false);
-                        recyclerViewAdapter.notifyDataSetChanged();
-                    } else {
-                        recyclerViewAdapter.getItemWithKey(6).setStatus(true);
-                        recyclerViewAdapter.notifyDataSetChanged();
-                    }
-                }
+            // WAREHOUSE 4
+
+            FourArrivingS = inputMessage.getData().getString("Warehouse_4/Arriving");
+            if(FourArrivingS != null){
+                int Add = Integer.parseInt(FourArrivingS);
+                FourArriving = recyclerViewAdapter.getItemWithKey(3).getArriving() + Add;// Add to Arriving
+            }
+            FourLeaving = inputMessage.getData().getString("Warehouse_4/Leaving");
+            if(FourLeaving != null){
+                int Subtract = Integer.parseInt(FourLeaving);
+                FourInside = recyclerViewAdapter.getItemWithKey(3).getInside() - Subtract;
+
+            }
+            FourError = inputMessage.getData().getString("Warehouse_4/Error");
+            FourArrived = inputMessage.getData().getString("Warehouse_4/Arrived");
+
+            if(FourArrived != null){ //When a box Arrives, we need to update Arriving and Inside fields
+                int Total = recyclerViewAdapter.getItemWithKey(3).getInside();
+                int Add = Integer.parseInt(FourArrived);
+                Total = Add + Total;
+                FourInside = Total;
+                int TotalArr = recyclerViewAdapter.getItemWithKey(3).getArriving();
+                FourArriving =  TotalArr - Add;
+            }
+
+            recyclerViewAdapter.getItemWithKey(3).setParameters(FourArriving, FourInside, FourError); //UPDATE
 
 
-                WatermelonLight = inputMessage.getData().getString("Watermelon/Light");
-                WatermelonTemperature = inputMessage.getData().getString("Watermelon/Temperature");
-                WatermelonHumidity = inputMessage.getData().getString("Watermelon/Humidity");
-                WatermelonDate = inputMessage.getData().getString("Watermelon/Date");
-                recyclerViewAdapter.getItemWithKey(7).setParameters(WatermelonLight,WatermelonHumidity, WatermelonTemperature, WatermelonDate);
-                if(WatermelonTemperature != null) {
-                    if (Float.parseFloat(WatermelonTemperature) > (float)30.0) {
-                        recyclerViewAdapter.getItemWithKey(7).setStatus(false);
-                        recyclerViewAdapter.notifyDataSetChanged();
-                    } else if (Float.parseFloat((WatermelonTemperature)) < (float)10.0) {
-                        recyclerViewAdapter.getItemWithKey(7).setStatus(false);
-                        recyclerViewAdapter.notifyDataSetChanged();
-                    } else {
-                        recyclerViewAdapter.getItemWithKey(7).setStatus(true);
-                        recyclerViewAdapter.notifyDataSetChanged();
-                    }
-                }
+            recyclerViewAdapter.notifyDataSetChanged();;
+
 
         }
     };
@@ -367,24 +322,8 @@ public class MainActivity extends AppCompatActivity {
         tracker.onSaveInstanceState(outState); // Save state about selections.
     }
 
-    // ------ Initialization of the dataset ------ //
-/*
-    private void initListOfItems () {
 
-        listofitems.add(new Item("Tomato", TomatoLight,TomatoHumidity,TomatoTemperature,TomatoDate, "March - April - May" , (long) 0 , R.drawable.tomato, true ));
-        listofitems.add(new Item("Pepper", PepperLight, PepperHumidity, PepperTemperature,PepperDate, "March - April - May" , (long) 1 , R.drawable.peper , false ));
-        listofitems.add(new Item("Eggplant", EggplantLight, EggplantHumidity, EggplantTemperature,EggplantDate, "July - August" , (long) 2 , R.drawable.eggplant , true ));
-        listofitems.add(new Item("Green bean", GreenBeanLight,GreenBeanHumidity, GreenBeanTemperature,GreenBeanDate, "May - Jun" , (long) 3 , R.drawable.green_bean , false ));
-        listofitems.add(new Item("Zucchini", ZucchiniLight, ZucchiniHumidity, ZucchiniTemperature,ZucchiniDate, "May" , (long) 4 , R.drawable.zucchini, true ));
-        listofitems.add(new Item("Cucumber", CucumberLight, CucumberHumidity,CucumberTemperature,CucumberDate,"April" , (long) 5 , R.drawable.cucumber , true ));
-        listofitems.add(new Item("Melon", MelonLight,MelonHumidity, MelonTemperature,MelonDate, "March - April - May" , (long) 6 , R.drawable.melon , true ));
-        listofitems.add(new Item("Watermelon", WatermelonLight,WatermelonHumidity, WatermelonTemperature,WatermelonDate, "February - March - April" , (long) 7 , R.drawable.watermelon , true ));
-
-        listofitemsinitialized = true;
-
-    }
-
- */
+    
 
     // ------ Buttons' on-click listeners ------ //
 

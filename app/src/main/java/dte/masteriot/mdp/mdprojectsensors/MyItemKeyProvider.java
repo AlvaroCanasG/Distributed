@@ -35,14 +35,12 @@ public class MyItemKeyProvider extends ItemKeyProvider<Long> {
     @Nullable
     @Override
     public Long getKey(int position) {
-        Log.d(TAG, "getKey() called for position " + position);
         return (adapter.getKeyAtPosition(position));
     }
 
     @SuppressLint("LongLogTag")
     @Override
     public int getPosition(@NonNull Long key) {
-        Log.d(TAG, "getPosition() called for key " + key);
         return (adapter.getPositionOfKey(key));
     }
 }

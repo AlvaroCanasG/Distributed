@@ -10,6 +10,9 @@ import android.view.ViewGroup;
 import androidx.recyclerview.selection.SelectionTracker;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.github.mikephil.charting.data.BarEntry;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class MyAdapter extends RecyclerView.Adapter<dte.masteriot.mdp.mdprojectsensors.MyViewHolder> {
@@ -22,7 +25,7 @@ public class MyAdapter extends RecyclerView.Adapter<dte.masteriot.mdp.mdprojects
     private SelectionTracker selectionTracker; // set through method setSelectionTracker()
     Context context;
     Activity activity;
-
+    private List<BarEntry> entries;
     public MyAdapter(Context ctxt, List<Item> listofitems) {
         super();
         context = ctxt;
@@ -79,10 +82,10 @@ public class MyAdapter extends RecyclerView.Adapter<dte.masteriot.mdp.mdprojects
 
 
     public int getPositionOfKey(Long searchedkey) {
+
         // Look for the position of the Item with key = searchedkey.
         // The following works because in Item, the method "equals" is overriden to compare only keys:
-        int position = items.indexOf(new Item("placeholder",0,0, "placeholder", searchedkey, 0,true));
-        Log.d(TAG, "getPositionOfKey() called for key " + searchedkey + ", will return " + position);
+        int position = items.indexOf(new Item("placeholder", 0, 0, "placeholder", searchedkey, 0, true, entries));
         return position;
     }
     public Item getItemWithKey(long key){ //Added for simplification

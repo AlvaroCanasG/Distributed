@@ -26,6 +26,7 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.github.mikephil.charting.data.BarEntry;
 import com.google.android.material.snackbar.Snackbar;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
@@ -141,7 +142,7 @@ public class MainActivity extends AppCompatActivity {
                     Warehouse.subscribeToTopic();
                     Warehouse.subscriptionTopic = "Warehouse_4/#";
                     Warehouse.subscribeToTopic();
-                    Snackbar.make(findViewById(R.id.bNewMeasurement), "Client connected and subscribed", 2000).show();
+                    Snackbar.make(findViewById(R.id.bNewMovement), "Client connected and subscribed", 2000).show();
                 }
 
                 @Override
@@ -159,7 +160,19 @@ public class MainActivity extends AppCompatActivity {
         MQTTSub task = new MQTTSub(handler, Warehouse);
         es.execute(task);
 
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        OneInside = recyclerViewAdapter.getItemWithKey(0).getInside();
+        TwoInside = recyclerViewAdapter.getItemWithKey(1).getInside();
+        ThreeInside = recyclerViewAdapter.getItemWithKey(2).getInside();
+        FourInside = recyclerViewAdapter.getItemWithKey(3).getInside();
+        OneArriving = recyclerViewAdapter.getItemWithKey(0).getArriving();
+        TwoArriving = recyclerViewAdapter.getItemWithKey(1).getArriving();
+        ThreeArriving = recyclerViewAdapter.getItemWithKey(2).getArriving();
+        FourArriving = recyclerViewAdapter.getItemWithKey(3).getArriving();
     }
 
     Handler handler = new Handler(Looper.getMainLooper()) { //Handler for the message received from the background. Depending on the key (topic), the message will be assigned to a specif String variable
@@ -176,8 +189,9 @@ public class MainActivity extends AppCompatActivity {
             if(OneLeaving != null){
                 int Subtract = Integer.parseInt(OneLeaving);
                 OneInside = recyclerViewAdapter.getItemWithKey(0).getInside() - Subtract;
-
+                recyclerViewAdapter.getItemWithKey(0).setListofEntries(UpdateEntries(recyclerViewAdapter.getItemWithKey(0).getListofEntries(), OneInside));
             }
+
             OneError = inputMessage.getData().getString("Warehouse_1/Error");
             OneArrived = inputMessage.getData().getString("Warehouse_1/Arrived");
 
@@ -188,9 +202,9 @@ public class MainActivity extends AppCompatActivity {
                 OneInside = Total;
                 int TotalArr = recyclerViewAdapter.getItemWithKey(0).getArriving();
                 OneArriving =  TotalArr - Add;
+                recyclerViewAdapter.getItemWithKey(0).setListofEntries(UpdateEntries(recyclerViewAdapter.getItemWithKey(0).getListofEntries(), OneInside));
             }
-
-            recyclerViewAdapter.getItemWithKey(0).setParameters(OneArriving, OneInside, OneError); //UPDATE
+            recyclerViewAdapter.getItemWithKey(0).setParameters(OneArriving,OneInside,OneError);
 
 //WAREHOUSE 2
             TwoArrivingS = inputMessage.getData().getString("Warehouse_2/Arriving");
@@ -202,7 +216,7 @@ public class MainActivity extends AppCompatActivity {
             if(TwoLeaving != null){
                 int Subtract = Integer.parseInt(TwoLeaving);
                 TwoInside = recyclerViewAdapter.getItemWithKey(1).getInside() - Subtract;
-
+                recyclerViewAdapter.getItemWithKey(1).setListofEntries(UpdateEntries(recyclerViewAdapter.getItemWithKey(1).getListofEntries(), TwoInside));
             }
             TwoError = inputMessage.getData().getString("Warehouse_2/Error");
             TwoArrived = inputMessage.getData().getString("Warehouse_2/Arrived");
@@ -214,6 +228,7 @@ public class MainActivity extends AppCompatActivity {
                 TwoInside = Total;
                 int TotalArr = recyclerViewAdapter.getItemWithKey(1).getArriving();
                 TwoArriving =  TotalArr - Add;
+                recyclerViewAdapter.getItemWithKey(1).setListofEntries(UpdateEntries(recyclerViewAdapter.getItemWithKey(1).getListofEntries(), TwoInside));
             }
 
             recyclerViewAdapter.getItemWithKey(1).setParameters(TwoArriving, TwoInside, TwoError); //UPDATE
@@ -230,6 +245,8 @@ public class MainActivity extends AppCompatActivity {
             if(ThreeLeaving != null){
                 int Subtract = Integer.parseInt(ThreeLeaving);
                 ThreeInside = recyclerViewAdapter.getItemWithKey(2).getInside() - Subtract;
+                recyclerViewAdapter.getItemWithKey(2).setListofEntries(UpdateEntries(recyclerViewAdapter.getItemWithKey(2).getListofEntries(), ThreeInside));
+
 
             }
             ThreeError = inputMessage.getData().getString("Warehouse_3/Error");
@@ -242,6 +259,7 @@ public class MainActivity extends AppCompatActivity {
                 ThreeInside = Total;
                 int TotalArr = recyclerViewAdapter.getItemWithKey(2).getArriving();
                 ThreeArriving =  TotalArr - Add;
+                recyclerViewAdapter.getItemWithKey(2).setListofEntries(UpdateEntries(recyclerViewAdapter.getItemWithKey(2).getListofEntries(), ThreeInside));
             }
 
             recyclerViewAdapter.getItemWithKey(2).setParameters(ThreeArriving, ThreeInside, ThreeError); //UPDATE
@@ -251,12 +269,13 @@ public class MainActivity extends AppCompatActivity {
             FourArrivingS = inputMessage.getData().getString("Warehouse_4/Arriving");
             if(FourArrivingS != null){
                 int Add = Integer.parseInt(FourArrivingS);
-                FourArriving = recyclerViewAdapter.getItemWithKey(3).getArriving() + Add;// Add to Arriving
+                FourArriving= recyclerViewAdapter.getItemWithKey(3).getArriving() + Add; // Add to Arriving
             }
             FourLeaving = inputMessage.getData().getString("Warehouse_4/Leaving");
             if(FourLeaving != null){
                 int Subtract = Integer.parseInt(FourLeaving);
                 FourInside = recyclerViewAdapter.getItemWithKey(3).getInside() - Subtract;
+                recyclerViewAdapter.getItemWithKey(3).setListofEntries(UpdateEntries(recyclerViewAdapter.getItemWithKey(3).getListofEntries(), FourInside));
 
             }
             FourError = inputMessage.getData().getString("Warehouse_4/Error");
@@ -269,12 +288,13 @@ public class MainActivity extends AppCompatActivity {
                 FourInside = Total;
                 int TotalArr = recyclerViewAdapter.getItemWithKey(3).getArriving();
                 FourArriving =  TotalArr - Add;
+                recyclerViewAdapter.getItemWithKey(3).setListofEntries(UpdateEntries(recyclerViewAdapter.getItemWithKey(3).getListofEntries(), FourInside));
             }
 
             recyclerViewAdapter.getItemWithKey(3).setParameters(FourArriving, FourInside, FourError); //UPDATE
 
 
-            recyclerViewAdapter.notifyDataSetChanged();;
+            recyclerViewAdapter.notifyDataSetChanged();
 
 
         }
@@ -340,21 +360,13 @@ public class MainActivity extends AppCompatActivity {
         startActivity(i);
     }
 
-    public void NewMeasurement(View view) {
-        // Button "New Measurement" has been clicked:
-
-        // This iterator allows to navigate through the keys of the currently selected items.
-        // Complete info on getSelection():
-        // https://developer.android.com/reference/androidx/recyclerview/selection/SelectionTracker#getSelection()
-        // Complete info on class Selection (getSelection() returns an object of this class):// https://developer.android.com/reference/androidx/recyclerview/selection/Selection
-        ArrayList<String> listofnames = new ArrayList<>();
-        for (int i = 0; i < listofitems.size(); i++){
-            listofnames.add(listofitems.get(i).getTitle());
-        }
+    public void NewMovement(View view) {
         Intent i = new Intent(this, SecondActivity.class);
-        i.putStringArrayListExtra("Names",listofnames);
+        i.putExtra("Inside1", recyclerViewAdapter.getItemWithKey(0).getInside());
+        i.putExtra("Inside2", recyclerViewAdapter.getItemWithKey(1).getInside());
+        i.putExtra("Inside3", recyclerViewAdapter.getItemWithKey(2).getInside());
+        i.putExtra("Inside4", recyclerViewAdapter.getItemWithKey(3).getInside());
         startActivity(i);
-        listofnames.clear();
     }
 
     private void confirmation() {
@@ -400,6 +412,21 @@ public class MainActivity extends AppCompatActivity {
         recyclerViewAdapter.notifyDataSetChanged();
     }
 
+
+
+
+
+
+
+      public List<BarEntry>  UpdateEntries(List<BarEntry> entries,int newBarEntry ){
+        List<BarEntry> newList = new ArrayList<>();
+        newList.add(new BarEntry(1,(int)newBarEntry));
+        for(int i = 2; i < 16; i++){
+            newList.add(new BarEntry(i, (int)entries.get(i-2).getY()));
+        }
+
+        return newList;
+     }
 
 
     public static Comparator<Item> GreenhouseAZ = new Comparator<Item>() {

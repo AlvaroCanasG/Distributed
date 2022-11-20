@@ -45,6 +45,7 @@ public class MQTTSub implements Runnable{//This class executes a thread to handl
 
             @Override
             public void messageArrived(String topic, MqttMessage message) throws Exception { //When an MQTT message arrives, it is sent to the foreground
+                msg_data.clear();
                 String measurement = new String(message.getPayload());
                 msg_data.putString(topic,measurement);
                 creator.dispatchMessage(msg);

@@ -49,6 +49,7 @@ public class SecondActivity extends AppCompatActivity implements AdapterView.OnI
     public static String from_wh;
     public static String to_wh;
     Button bPublish;
+    public Integer OneInside, TwoInside, ThreeInside, FourInside;
 
     boolean WarehousesSelected;
     boolean from_ok = false;
@@ -84,10 +85,13 @@ public class SecondActivity extends AppCompatActivity implements AdapterView.OnI
         }
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item , Title);
 
-        //[ACG]
-
-        Intent intent = getIntent();
         //Get the updated list of Warehouses
+        Intent myintent = getIntent();
+        OneInside = myintent.getIntExtra("Inside1",0);
+        TwoInside = myintent.getIntExtra("Inside2",0);
+        ThreeInside = myintent.getIntExtra("Inside3",0);
+        FourInside = myintent.getIntExtra("Inside4",0);
+
 
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner_from.setAdapter(adapter);
@@ -109,7 +113,7 @@ public class SecondActivity extends AppCompatActivity implements AdapterView.OnI
                     checkFrom(); //Checks that there's enough boxes to send
                     checkTo(); //Checks that there's enough space to receive
                     if(!from_ok){
-                        from_wh = spinner_from.getSelectedItem().toString();
+                        /*from_wh = spinner_from.getSelectedItem().toString();
                         myMQTT.publishTopic = from_wh.replaceAll(" ", "_") + "/Error";
                         try {
                             myMQTT.publishMessage("Not enough boxes to send");
@@ -117,32 +121,35 @@ public class SecondActivity extends AppCompatActivity implements AdapterView.OnI
 
                         } catch (MqttException e) {
                             e.printStackTrace();
-                        }
+                        }*/
+                        myMQTT.SendNotification("Not enough containers in source Warehouse");
                     }
                     else if(!to_ok){
-                        to_wh = spinner_to.getSelectedItem().toString();
+                        /*to_wh = spinner_to.getSelectedItem().toString();
                         myMQTT.publishTopic = to_wh.replaceAll(" ", "_") + "/Error";
                         try {
                             myMQTT.publishMessage("Not enough space to receive boxes");
                             //Break o algo para salir de aquí
                         } catch (MqttException e) {
                             e.printStackTrace();
-                        }
+                        }*/
+                        myMQTT.SendNotification("Not enough space in target Warehouse");
                     }
                     else if (from_ok && to_ok)
                     {
                         from_wh = spinner_from.getSelectedItem().toString();
                         myMQTT.publishTopic = from_wh.replaceAll(" ", "_") + "/Leaving";
                         try {
-                            myMQTT.publishMessage(nb_containers.toString());
+                            myMQTT.publishMessage(nb_containers.getText().toString());
                             from_sent=true;
                         } catch (MqttException e) {
                             e.printStackTrace();
                         }
-                        to_wh = spinner_from.getSelectedItem().toString();
+                        to_wh = spinner_to.getSelectedItem().toString();
                         myMQTT.publishTopic = to_wh.replaceAll(" ", "_") + "/Arriving";
                         try {
-                            myMQTT.publishMessage(nb_containers.toString());
+                            myMQTT.publishMessage(nb_containers.getText().toString());
+                            myMQTT.SendNotification("Message published");
                         } catch (MqttException e) {
                             e.printStackTrace();
                         }
@@ -218,19 +225,51 @@ public class SecondActivity extends AppCompatActivity implements AdapterView.OnI
 
     private void checkFrom()
     {
-        Item from = (Item) spinner_from.getSelectedItem();
-        int number = Integer.parseInt(nb_containers.toString());
-        if(from.getInside()>=number) from_ok = true;
+        String from =  (String)spinner_from.getSelectedItem();
+        int inside = 0;
+        switch(from){
+            case "Warehouse 1":
+                inside = OneInside;
+                break;
+            case "Warehouse 2":
+                inside = TwoInside;
+                break;
+            case "Warehouse 3":
+                inside = ThreeInside;
+                break;
+            case "Warehouse 4":
+                inside = FourInside;
+                break;
+
+        }
+        int number = Integer.parseInt(nb_containers.getText().toString());
+        if(inside>=number) from_ok = true;
         else from_ok = false;
 
     }
 
     private void checkTo()
     {
-        Item to = (Item) spinner_to.getSelectedItem();
-        int number = Integer.parseInt(nb_containers.toString());
-        if(to.getInside()+number<=10) from_ok = true;
-        else from_ok = false;
+        String to = (String) spinner_to.getSelectedItem();
+        int inside = 0;
+        switch(to){
+            case "Warehouse 1":
+                inside = OneInside;
+                break;
+            case "Warehouse 2":
+                inside = TwoInside;
+                break;
+            case "Warehouse 3":
+                inside = ThreeInside;
+                break;
+            case "Warehouse 4":
+                inside = FourInside;
+                break;
+
+        }
+        int number = Integer.parseInt(nb_containers.getText().toString());
+        if(inside+number<=12) to_ok = true;
+        else to_ok = false;
 
     }
 

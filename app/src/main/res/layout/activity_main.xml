@@ -7,7 +7,7 @@
     tools:context=".MainActivity">
 
     <Button
-        android:id="@+id/bNewMeasurement"
+        android:id="@+id/bNewMovement"
         android:layout_width="269dp"
         android:layout_height="57dp"
         android:layout_marginStart="50dp"
@@ -15,8 +15,8 @@
         android:layout_marginBottom="20dp"
 
         android:backgroundTint="@color/brown"
-        android:onClick="NewMeasurement"
-        android:text="New Measurement"
+        android:onClick="NewMovement"
+        android:text="New Movement"
         android:textColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -30,7 +30,7 @@
         android:layout_marginTop="20dp"
         android:layout_marginEnd="1dp"
         android:layout_marginBottom="39dp"
-        app:layout_constraintBottom_toTopOf="@+id/bNewMeasurement"
+        app:layout_constraintBottom_toTopOf="@+id/bNewMovement"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">

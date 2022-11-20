@@ -28,14 +28,11 @@
         android:id="@+id/spinner_from"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="15dp"
-        android:layout_marginTop="60dp"
-        android:layout_marginEnd="30dp"
+        android:layout_marginStart="80dp"
+        android:layout_marginTop="50dp"
         android:contentDescription="Wh_leaving"
         android:dropDownWidth="wrap_content"
         android:minHeight="50dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.613"
         app:layout_constraintStart_toEndOf="@+id/textView8"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -43,16 +40,13 @@
         android:id="@+id/spinner_to"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="15dp"
-        android:layout_marginTop="196dp"
-        android:layout_marginEnd="30dp"
+        android:layout_marginStart="60dp"
+        android:layout_marginTop="78dp"
         android:contentDescription="Wh_leaving"
         android:dropDownWidth="wrap_content"
         android:minHeight="50dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.613"
         app:layout_constraintStart_toEndOf="@+id/textView8"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/textView8" />
 
     <TextView
         android:id="@+id/textView4"
@@ -83,9 +77,9 @@
 
     <TextView
         android:id="@+id/textView8"
-        android:layout_width="182dp"
-        android:layout_height="48dp"
-        android:layout_marginStart="30dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="60dp"
         android:layout_marginTop="60dp"
         android:text="From:"
         android:textAlignment="textStart"
@@ -97,9 +91,9 @@
 
     <TextView
         android:id="@+id/textView5"
-        android:layout_width="182dp"
-        android:layout_height="48dp"
-        android:layout_marginStart="32dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="60dp"
         android:layout_marginTop="88dp"
         android:text="To:"
         android:textAlignment="textStart"
@@ -112,12 +106,14 @@
     <EditText
         android:id="@+id/nb_cont"
         android:layout_width="108dp"
-        android:layout_height="41dp"
-        android:layout_marginTop="62dp"
+        android:layout_height="48dp"
+        android:layout_marginEnd="28dp"
+        android:layout_marginBottom="-3dp"
         android:ems="10"
         android:inputType="number"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toBottomOf="@+id/textView9"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/textView9"
-        app:layout_constraintTop_toBottomOf="@+id/spinner_to" />
+        tools:ignore="SpeakableTextPresentCheck" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

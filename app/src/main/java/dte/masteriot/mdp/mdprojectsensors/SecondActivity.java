@@ -138,7 +138,7 @@ public class SecondActivity extends AppCompatActivity implements AdapterView.OnI
                     else if (from_ok && to_ok)
                     {
                         from_wh = spinner_from.getSelectedItem().toString();
-                        myMQTT.publishTopic = from_wh.replaceAll(" ", "_") + "/Leaving";
+                        myMQTT.publishTopic = "project/"+from_wh.replaceAll(" ", "_") + "/Leaving";
                         try {
                             myMQTT.publishMessage(nb_containers.getText().toString());
                             from_sent=true;
@@ -146,7 +146,7 @@ public class SecondActivity extends AppCompatActivity implements AdapterView.OnI
                             e.printStackTrace();
                         }
                         to_wh = spinner_to.getSelectedItem().toString();
-                        myMQTT.publishTopic = to_wh.replaceAll(" ", "_") + "/Arriving";
+                        myMQTT.publishTopic = "project/"+to_wh.replaceAll(" ", "_") + "/Arriving";
                         try {
                             myMQTT.publishMessage(nb_containers.getText().toString());
                             myMQTT.SendNotification("Message published");

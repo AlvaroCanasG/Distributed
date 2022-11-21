@@ -32,7 +32,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 public class MQTTClient extends AppCompatActivity {
-    final String serverUri = "tcp://172.20.10.3:1883";
+    final String serverUri = "tcp://192.168.1.133:1883";
     String publishTopic = "topic";
     MqttAndroidClient mqttAndroidClient;
     String clientId = "Client_";

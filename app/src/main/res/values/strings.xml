@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Greenhouse APP</string>
+    <string name="app_name">Warehouse APP</string>
 
     <string-array name="Greenhouses_array">
         <item>Tomato</item>

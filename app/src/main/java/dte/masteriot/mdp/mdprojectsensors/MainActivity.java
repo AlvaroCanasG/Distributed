@@ -134,13 +134,13 @@ public class MainActivity extends AppCompatActivity {
                     disconnectedBufferOptions.setPersistBuffer(false);
                     disconnectedBufferOptions.setDeleteOldestMessages(false);
                     Warehouse.mqttAndroidClient.setBufferOpts(disconnectedBufferOptions);
-                    Warehouse.subscriptionTopic = "Warehouse_1/#";
+                    Warehouse.subscriptionTopic = "project/Warehouse_1/#";
                     Warehouse.subscribeToTopic();
-                    Warehouse.subscriptionTopic = "Warehouse_2/#";
+                    Warehouse.subscriptionTopic = "project/Warehouse_2/#";
                     Warehouse.subscribeToTopic();
-                    Warehouse.subscriptionTopic = "Warehouse_3/#";
+                    Warehouse.subscriptionTopic = "project/Warehouse_3/#";
                     Warehouse.subscribeToTopic();
-                    Warehouse.subscriptionTopic = "Warehouse_4/#";
+                    Warehouse.subscriptionTopic = "project/Warehouse_4/#";
                     Warehouse.subscribeToTopic();
                     Snackbar.make(findViewById(R.id.bNewMovement), "Client connected and subscribed", 2000).show();
                 }
@@ -180,20 +180,20 @@ public class MainActivity extends AppCompatActivity {
         public void handleMessage(Message inputMessage) {
             this.obtainMessage();
 //WAREHOUSE 1
-            OneArrivingS = inputMessage.getData().getString("Warehouse_1/Arriving");
+            OneArrivingS = inputMessage.getData().getString("project/Warehouse_1/Arriving");
             if(OneArrivingS != null){
                 int Add = Integer.parseInt(OneArrivingS);
                 OneArriving = recyclerViewAdapter.getItemWithKey(0).getArriving() + Add;// Add to Arriving
             }
-            OneLeaving = inputMessage.getData().getString("Warehouse_1/Leaving");
+            OneLeaving = inputMessage.getData().getString("project/Warehouse_1/Leaving");
             if(OneLeaving != null){
                 int Subtract = Integer.parseInt(OneLeaving);
                 OneInside = recyclerViewAdapter.getItemWithKey(0).getInside() - Subtract;
                 recyclerViewAdapter.getItemWithKey(0).setListofEntries(UpdateEntries(recyclerViewAdapter.getItemWithKey(0).getListofEntries(), OneInside));
             }
 
-            OneError = inputMessage.getData().getString("Warehouse_1/Error");
-            OneArrived = inputMessage.getData().getString("Warehouse_1/Arrived");
+            OneError = inputMessage.getData().getString("project/Warehouse_1/Error");
+            OneArrived = inputMessage.getData().getString("project/Warehouse_1/Arrived");
 
             if(OneArrived != null){ //When a box Arrives, we need to update Arriving and Inside fields
                 int Total = recyclerViewAdapter.getItemWithKey(0).getInside();
@@ -207,19 +207,19 @@ public class MainActivity extends AppCompatActivity {
             recyclerViewAdapter.getItemWithKey(0).setParameters(OneArriving,OneInside,OneError);
 
 //WAREHOUSE 2
-            TwoArrivingS = inputMessage.getData().getString("Warehouse_2/Arriving");
+            TwoArrivingS = inputMessage.getData().getString("project/Warehouse_2/Arriving");
             if(TwoArrivingS != null){
                 int Add = Integer.parseInt(TwoArrivingS);
                 TwoArriving = recyclerViewAdapter.getItemWithKey(1).getArriving() + Add;// Add to Arriving
             }
-            TwoLeaving = inputMessage.getData().getString("Warehouse_2/Leaving");
+            TwoLeaving = inputMessage.getData().getString("project/Warehouse_2/Leaving");
             if(TwoLeaving != null){
                 int Subtract = Integer.parseInt(TwoLeaving);
                 TwoInside = recyclerViewAdapter.getItemWithKey(1).getInside() - Subtract;
                 recyclerViewAdapter.getItemWithKey(1).setListofEntries(UpdateEntries(recyclerViewAdapter.getItemWithKey(1).getListofEntries(), TwoInside));
             }
-            TwoError = inputMessage.getData().getString("Warehouse_2/Error");
-            TwoArrived = inputMessage.getData().getString("Warehouse_2/Arrived");
+            TwoError = inputMessage.getData().getString("project/Warehouse_2/Error");
+            TwoArrived = inputMessage.getData().getString("project/Warehouse_2/Arrived");
 
             if(TwoArrived != null){ //When a box Arrives, we need to update Arriving and Inside fields
                 int Total = recyclerViewAdapter.getItemWithKey(1).getInside();
@@ -236,12 +236,12 @@ public class MainActivity extends AppCompatActivity {
 
 
 // WAREHOUSE 3
-            ThreeArrivingS = inputMessage.getData().getString("Warehouse_3/Arriving");
+            ThreeArrivingS = inputMessage.getData().getString("project/Warehouse_3/Arriving");
             if(ThreeArrivingS != null){
                 int Add = Integer.parseInt(ThreeArrivingS);
                 ThreeArriving = recyclerViewAdapter.getItemWithKey(2).getArriving() + Add;// Add to Arriving
             }
-            ThreeLeaving = inputMessage.getData().getString("Warehouse_3/Leaving");
+            ThreeLeaving = inputMessage.getData().getString("project/Warehouse_3/Leaving");
             if(ThreeLeaving != null){
                 int Subtract = Integer.parseInt(ThreeLeaving);
                 ThreeInside = recyclerViewAdapter.getItemWithKey(2).getInside() - Subtract;
@@ -249,8 +249,8 @@ public class MainActivity extends AppCompatActivity {
 
 
             }
-            ThreeError = inputMessage.getData().getString("Warehouse_3/Error");
-            ThreeArrived = inputMessage.getData().getString("Warehouse_3/Arrived");
+            ThreeError = inputMessage.getData().getString("project/Warehouse_3/Error");
+            ThreeArrived = inputMessage.getData().getString("project/Warehouse_3/Arrived");
 
             if(ThreeArrived != null){ //When a box Arrives, we need to update Arriving and Inside fields
                 int Total = recyclerViewAdapter.getItemWithKey(2).getInside();
@@ -266,20 +266,20 @@ public class MainActivity extends AppCompatActivity {
 
             // WAREHOUSE 4
 
-            FourArrivingS = inputMessage.getData().getString("Warehouse_4/Arriving");
+            FourArrivingS = inputMessage.getData().getString("project/Warehouse_4/Arriving");
             if(FourArrivingS != null){
                 int Add = Integer.parseInt(FourArrivingS);
                 FourArriving= recyclerViewAdapter.getItemWithKey(3).getArriving() + Add; // Add to Arriving
             }
-            FourLeaving = inputMessage.getData().getString("Warehouse_4/Leaving");
+            FourLeaving = inputMessage.getData().getString("project/Warehouse_4/Leaving");
             if(FourLeaving != null){
                 int Subtract = Integer.parseInt(FourLeaving);
                 FourInside = recyclerViewAdapter.getItemWithKey(3).getInside() - Subtract;
                 recyclerViewAdapter.getItemWithKey(3).setListofEntries(UpdateEntries(recyclerViewAdapter.getItemWithKey(3).getListofEntries(), FourInside));
 
             }
-            FourError = inputMessage.getData().getString("Warehouse_4/Error");
-            FourArrived = inputMessage.getData().getString("Warehouse_4/Arrived");
+            FourError = inputMessage.getData().getString("project/Warehouse_4/Error");
+            FourArrived = inputMessage.getData().getString("project/Warehouse_4/Arrived");
 
             if(FourArrived != null){ //When a box Arrives, we need to update Arriving and Inside fields
                 int Total = recyclerViewAdapter.getItemWithKey(3).getInside();

@@ -55,14 +55,11 @@ public class SecondActivity extends AppCompatActivity implements AdapterView.OnI
     boolean from_ok = false;
     boolean to_ok= false;
     boolean from_sent=false;
-    //boolean noTouchPublish = false;
 
 
     String firstRoot;
     MQTTClient myMQTT;
-    ArrayList<String> MyList;
     Spinner spinner_from, spinner_to;
-    //float x,y,z, last_x,last_y,last_z;
     long lastUpdate;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,7 +73,7 @@ public class SecondActivity extends AppCompatActivity implements AdapterView.OnI
 
         spinner_from = (Spinner) findViewById(R.id.spinner_from);
         spinner_to = (Spinner) findViewById(R.id.spinner_to);
-        //MGM
+
         List<Item> listofitems = ((MyApplication) this.getApplication()).getListofitems();
         ArrayList<String> Title = new ArrayList<>();
         for (int i = 0; i<listofitems.size(); i++){
@@ -113,26 +110,11 @@ public class SecondActivity extends AppCompatActivity implements AdapterView.OnI
                     checkFrom(); //Checks that there's enough boxes to send
                     checkTo(); //Checks that there's enough space to receive
                     if(!from_ok){
-                        /*from_wh = spinner_from.getSelectedItem().toString();
-                        myMQTT.publishTopic = from_wh.replaceAll(" ", "_") + "/Error";
-                        try {
-                            myMQTT.publishMessage("Not enough boxes to send");
 
-
-                        } catch (MqttException e) {
-                            e.printStackTrace();
-                        }*/
                         myMQTT.SendNotification("Not enough containers in source Warehouse");
                     }
                     else if(!to_ok){
-                        /*to_wh = spinner_to.getSelectedItem().toString();
-                        myMQTT.publishTopic = to_wh.replaceAll(" ", "_") + "/Error";
-                        try {
-                            myMQTT.publishMessage("Not enough space to receive boxes");
-                            //Break o algo para salir de aquí
-                        } catch (MqttException e) {
-                            e.printStackTrace();
-                        }*/
+
                         myMQTT.SendNotification("Not enough space in target Warehouse");
                     }
                     else if (from_ok && to_ok)

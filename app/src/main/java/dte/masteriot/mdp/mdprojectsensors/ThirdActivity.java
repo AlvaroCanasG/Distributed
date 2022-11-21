@@ -91,7 +91,14 @@ public class ThirdActivity extends AppCompatActivity {
         chart.setData(bardata);
         chart.setFitBars(true);
         chart.getDescription().setEnabled(false);
-
+        bardata.setValueFormatter(new ValueFormatter()
+        {
+            @Override
+            public String getFormattedValue(float v)
+            {
+                return ((int) v)+"";
+            }
+        });
         XAxis xaxis = chart.getXAxis();
         xaxis.setDrawGridLines(false);
         xaxis.setDrawLabels(false);
